@@ -2,12 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const loki = require("lokijs");
 
-
 const db = new loki("./notas.json");
 const app = express();
 
 let notas = db.addCollection("notas");
-
 
 db.loadDatabase({}, () => {
   notas = db.getCollection("notas");
@@ -15,19 +13,18 @@ db.loadDatabase({}, () => {
 
 app.use(cors());
 
-
 app.get("/api/v1/notas:id?", (req, res) => {
   let status = 200;
-  let response;
-  try{
+  let response = {};
+  try {
     response = notas.data;
-    if( req.params.id){
+    if (req.params.id) {
       response = notas
         .chain()
-        .find({$loki: Number(reqs.params.id)})
+        .find({ $loki: Number(req.params.id) })
         .data();
     }
-  }catch(e){
+  } catch (e) {
     status = 500;
   }
   res.status(status).send({
