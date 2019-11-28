@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const loki = require("lokijs");
 
 
@@ -14,20 +15,20 @@ db.loadDatabase({}, () => {
 });
 
 app.use(cors());
-
+app.use(bodyParser());
 
 app.get("/api/v1/notas:id?", (req, res) => {
   let status = 200;
   let response;
-  try{
+  try {
     response = notas.data;
-    if( req.params.id){
+    if (req.params.id) {
       response = notas
         .chain()
-        .find({$loki: Number(reqs.params.id)})
+        .find({ $loki: Number(reqs.params.id) })
         .data();
     }
-  }catch(e){
+  } catch (e) {
     status = 500;
   }
   res.status(status).send({
@@ -38,10 +39,21 @@ app.get("/api/v1/notas:id?", (req, res) => {
 });
 
 app.post("/api/v1/notas", (req, res) => {
-  res.status(200).send({
-    success: true,
-    message: "post notas"
-  });
+  try {
+    const insert = notas.insert(req.body);
+    db.saveDatabase();
+    res.status(200).send({
+      success: true,
+      message: "POST NOTAS",
+      insert
+    });
+  } catch (e) {
+    res.status(500).send({
+      success: false,
+      message: "ERROR"
+    });
+  }
+
 });
 
 const port = process.env.PORT || 3000;
