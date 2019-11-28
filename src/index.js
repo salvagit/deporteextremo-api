@@ -13,7 +13,7 @@ db.loadDatabase({}, () => {
 
 app.use(cors());
 
-app.get("/api/v1/notas:id?", (req, res) => {
+app.get("/api/v1/notas/:id?", (req, res) => {
   let status = 200;
   let response = {};
   try {
