@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const loki = require("lokijs");
 
 const db = new loki("./notas.json");
@@ -35,10 +36,20 @@ app.get("/api/v1/notas/:id?", (req, res) => {
 });
 
 app.post("/api/v1/notas", (req, res) => {
-  res.status(200).send({
-    success: true,
-    message: "post notas"
-  });
+  try {
+    const insert = notas.insert(req.body);
+    db.saveDatabase();
+    res.status(200).send({
+      success: true,
+      message: "POST NOTAS",
+      insert
+    });
+  } catch (e) {
+    res.status(500).send({
+      success: false,
+      message: "ERROR"
+    });
+  }
 });
 
 const port = process.env.PORT || 3000;
